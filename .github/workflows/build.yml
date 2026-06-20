@@ -63,6 +63,7 @@ jobs:
         run: npx electron-builder ${{ matrix.config.args }} --publish never
 
       - name: List build output
+        shell: bash
         run: ls -la release/
 
       - name: Upload artifacts
