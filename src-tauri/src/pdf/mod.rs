@@ -1,0 +1,13 @@
+pub mod compress;
+pub mod decrypt;
+pub mod delete_pages;
+pub mod encrypt;
+pub mod extract_images;
+pub mod inspect;
+pub mod merge;
+pub mod page_numbers;
+pub mod render;
+pub mod reorder;
+pub mod rotate;
+pub mod split;
+pub mod watermark;

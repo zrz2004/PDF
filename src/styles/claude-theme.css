@@ -1,0 +1,136 @@
+.claude-workbench,
+.app-shell {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(217, 119, 87, 0.16), transparent 27%),
+    radial-gradient(circle at 86% -4%, rgba(106, 155, 204, 0.13), transparent 32%),
+    linear-gradient(180deg, var(--lp-bg) 0%, var(--lp-bg-wash) 100%);
+}
+
+.app-grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(135deg, rgba(20,20,19,.34) 0 1px, transparent 1px 7px),
+    radial-gradient(circle at center, rgba(20,20,19,.20) 0 0.7px, transparent 0.9px);
+  background-size: 7px 7px, 18px 18px;
+  z-index: 0;
+}
+
+.panel {
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface-glass);
+  box-shadow: var(--lp-shadow-card);
+  border-radius: var(--lp-radius-2xl);
+  backdrop-filter: blur(18px);
+}
+
+.panel-subtle {
+  border: 1px solid var(--lp-border);
+  background: color-mix(in srgb, var(--lp-surface-muted) 82%, transparent);
+  border-radius: var(--lp-radius-xl);
+}
+
+.tool-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--lp-border);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lp-surface-raised) 44%, transparent), transparent),
+    linear-gradient(180deg, var(--lp-surface) 0%, color-mix(in srgb, var(--lp-surface-muted) 54%, var(--lp-surface)) 100%);
+  border-radius: 20px;
+  box-shadow: var(--lp-shadow-card);
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--tool-accent, var(--lp-accent));
+  opacity: .62;
+  transform: scaleY(.46);
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+.tool-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(circle at 20% 0%, var(--tool-accent-soft, rgba(217,119,87,.12)), transparent 38%);
+  transition: opacity .18s ease;
+  pointer-events: none;
+}
+
+.tool-card:hover {
+  box-shadow: var(--lp-shadow-hover);
+}
+.tool-card:hover::before { transform: scaleY(1); opacity: .88; }
+.tool-card:hover::after { opacity: 1; }
+
+.tool-icon {
+  border: 1px solid var(--lp-border);
+  background: color-mix(in srgb, var(--tool-accent, var(--lp-accent)) 12%, var(--lp-surface));
+  color: var(--tool-accent, var(--lp-accent));
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-surface) 80%, transparent);
+  padding: .25rem .625rem;
+  color: var(--lp-text-muted);
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status-pill[data-tone='green'] {
+  border-color: color-mix(in srgb, var(--lp-green) 32%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-green-soft) 50%, var(--lp-surface));
+  color: var(--lp-green);
+}
+
+.status-pill[data-tone='blue'] {
+  border-color: color-mix(in srgb, var(--lp-blue) 32%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-blue-soft) 55%, var(--lp-surface));
+  color: #3d6f9e;
+}
+
+.status-pill[data-tone='orange'] {
+  border-color: color-mix(in srgb, var(--lp-accent) 32%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-accent-soft) 48%, var(--lp-surface));
+  color: var(--lp-accent-strong);
+}
+
+.drag-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--lp-border) 72%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--lp-border) 72%, transparent) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: -1px -1px;
+}
+
+.workspace-grid {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (min-width: 1280px) {
+  .workspace-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  }
+}

@@ -1,0 +1,64 @@
+:root {
+  color-scheme: light;
+  --lp-bg: #f7f5ee;
+  --lp-bg-wash: #ebe7db;
+  --lp-bg-ink: #141413;
+  --lp-surface: #fffdf8;
+  --lp-surface-muted: #f0ede3;
+  --lp-surface-raised: #ffffff;
+  --lp-surface-glass: rgba(255, 253, 248, 0.76);
+  --lp-text: #141413;
+  --lp-text-muted: #69665f;
+  --lp-text-faint: #9b968a;
+  --lp-border: #e4e0d4;
+  --lp-border-strong: #d2cdc0;
+  --lp-accent: #d97757;
+  --lp-accent-strong: #b85f43;
+  --lp-accent-soft: #f1d0c3;
+  --lp-blue: #5f8fbf;
+  --lp-blue-soft: #d9e7f3;
+  --lp-green: #74895a;
+  --lp-green-soft: #e0e7d3;
+  --lp-danger: #b84d42;
+  --lp-danger-soft: #f0d0cb;
+  --lp-warning: #b8793c;
+  --lp-warning-soft: #efdcbc;
+  --lp-radius-2xl: 28px;
+  --lp-radius-xl: 22px;
+  --lp-radius-lg: 16px;
+  --lp-radius-md: 12px;
+  --lp-shadow-soft: 0 24px 80px rgba(20, 20, 19, 0.10);
+  --lp-shadow-card: 0 14px 46px rgba(20, 20, 19, 0.075);
+  --lp-shadow-hover: 0 20px 70px rgba(20, 20, 19, 0.13);
+  --lp-font-sans: "Aptos", "Bahnschrift", "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  --lp-font-display: "Bahnschrift", "Microsoft YaHei UI", "Aptos Display", sans-serif;
+  --lp-font-mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --lp-bg: #141413;
+  --lp-bg-wash: #1d1b18;
+  --lp-bg-ink: #0d0d0c;
+  --lp-surface: #1f1e1b;
+  --lp-surface-muted: #272520;
+  --lp-surface-raised: #24231f;
+  --lp-surface-glass: rgba(31, 30, 27, 0.78);
+  --lp-text: #faf9f5;
+  --lp-text-muted: #b0aea5;
+  --lp-text-faint: #817d73;
+  --lp-border: rgba(232, 230, 220, 0.14);
+  --lp-border-strong: rgba(232, 230, 220, 0.24);
+  --lp-accent-soft: rgba(217, 119, 87, 0.22);
+  --lp-blue-soft: rgba(106, 155, 204, 0.20);
+  --lp-green-soft: rgba(120, 140, 93, 0.20);
+  --lp-danger-soft: rgba(184, 77, 66, 0.22);
+  --lp-warning-soft: rgba(184, 121, 60, 0.22);
+  --lp-shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.32);
+  --lp-shadow-card: 0 14px 46px rgba(0, 0, 0, 0.22);
+  --lp-shadow-hover: 0 20px 70px rgba(0, 0, 0, 0.34);
+}

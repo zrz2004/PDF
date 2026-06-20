@@ -1,0 +1,57 @@
+name: 🐛 Bug Report
+description: Report something that is not working as expected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report! LocalPDF Studio runs
+        fully locally, so please avoid uploading sensitive files.
+  - type: input
+    id: version
+    attributes:
+      label: LocalPDF Studio version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: input
+    id: engines
+    attributes:
+      label: External engines installed
+      description: "e.g. qpdf, LibreOffice, Tesseract, Ghostscript (leave blank if none)"
+      placeholder: "qpdf, LibreOffice"
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the issue and what you expected instead.
+      placeholder: "I converted X to Y and..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open tool '...'
+        2. Select file '...'
+        3. Click convert
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error output
+      render: shell

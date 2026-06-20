@@ -1,0 +1,128 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag/version override (e.g. v1.0.0). If omitted, the current git tag is used."
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }} / ${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+            artifact-prefix: windows
+          - os: macos-latest
+            arch: x64
+            artifact-prefix: macos
+          - os: macos-latest
+            arch: arm64
+            artifact-prefix: macos
+          - os: ubuntu-latest
+            arch: x64
+            artifact-prefix: linux
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Linux needs these native libs for electron-builder/chromium packaging
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools libgtk-3-0 libnotify4 libnss3 libxss1 libxtst6 xauth xvfb libgbm1 libasound2t64 || true
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build desktop package
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS notarization is optional; only triggered if secrets are set.
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ runner.os == 'macOS' && 'false' || 'false' }}
+        run: npm run electron:build -- --${{ matrix.arch }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalPDF-Studio-${{ matrix.artifact-prefix }}-${{ matrix.arch }}
+          path: |
+            release/*-Setup-*.exe
+            release/*-Portable-*.zip
+            release/*.dmg
+            release/*.app
+            release/*.snap
+            release/*-*.AppImage
+            release/*-*.deb
+            release/*.yml
+            release/*.blockmap
+          if-no-files-found: ignore
+          retention-days: 14
+
+  release:
+    name: Publish to GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Move artifacts to a flat folder
+        run: |
+          mkdir -p release-assets
+          find artifacts -type f \( \
+            -name "*-Setup-*.exe" -o \
+            -name "*-Portable-*.zip" -o \
+            -name "*.dmg" -o \
+            -name "*.app" -o \
+            -name "*-*.AppImage" -o \
+            -name "*-*.deb" -o \
+            -name "*.snap" \
+          \) -exec cp -v {} release-assets/ \;
+          ls -la release-assets/
+
+      - name: Generate checksums
+        working-directory: release-assets
+        run: sha256sum * | tee ../checksums-sha256.txt
+
+      - name: Upload assets to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            release-assets/*
+            checksums-sha256.txt
+          draft: true
+          generate_release_notes: false
+          body_path: .github/release-notes.md

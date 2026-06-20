@@ -1,0 +1,160 @@
+{
+  "name": "localpdf-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "description": "LocalPDF Studio — a local-first, privacy-friendly desktop workbench for PDF, Office, EPUB, and image conversion.",
+  "license": "MIT",
+  "author": "LocalPDF Studio Contributors",
+  "homepage": "https://github.com/zrz2004/PDF",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zrz2004/PDF.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zrz2004/PDF/issues"
+  },
+  "keywords": [
+    "pdf",
+    "conversion",
+    "pdf-tools",
+    "electron",
+    "desktop",
+    "office",
+    "ocr",
+    "image-processing",
+    "local-first",
+    "privacy"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "icon:generate": "node scripts/generate-icons.mjs",
+    "electron": "npm run build && electron .",
+    "electron:build": "npm run icon:generate && npm run build && electron-builder --win nsis zip",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "latest",
+    "@pdf-lib/fontkit": "^1.1.1",
+    "@tanstack/react-virtual": "latest",
+    "@tauri-apps/api": "latest",
+    "clsx": "latest",
+    "cmdk": "latest",
+    "docx": "^9.7.1",
+    "framer-motion": "latest",
+    "jszip": "^3.10.1",
+    "lucide-react": "latest",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^2.4.5",
+    "pptxgenjs": "^4.0.1",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-dropzone": "latest",
+    "react-hook-form": "latest",
+    "sharp": "^0.34.5",
+    "tailwind-merge": "latest",
+    "xlsx": "^0.18.5",
+    "zod": "latest",
+    "zustand": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
+    "@tauri-apps/cli": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "latest",
+    "autoprefixer": "^10.5.0",
+    "electron": "^42.3.3",
+    "electron-builder": "^26.15.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.17",
+    "to-ico": "^1.1.5",
+    "typescript": "latest",
+    "vite": "latest"
+  },
+  "build": {
+    "appId": "com.localpdf.studio",
+    "productName": "LocalPDF Studio",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "build/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.cjs"
+    },
+    "icon": "build/icon.png",
+    "win": {
+      "icon": "build/icon.ico",
+      "artifactName": "LocalPDF-Studio-Portable-${version}-${arch}.${ext}",
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "nsis": {
+      "artifactName": "LocalPDF-Studio-Setup-${version}-${arch}.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.productivity",
+      "artifactName": "LocalPDF-Studio-${version}-${arch}.${ext}",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Office",
+      "artifactName": "LocalPDF-Studio-${version}-${arch}.${ext}",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "maintainer": "LocalPDF Studio Contributors"
+    },
+    "deb": {
+      "depends": [
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0",
+        "libdrm2",
+        "libgbm1"
+      ]
+    }
+  }
+}
