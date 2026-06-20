@@ -5,34 +5,34 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Tag/version override (e.g. v1.0.0). If omitted, the current git tag is used."
-        required: false
 
 permissions:
   contents: write
 
 jobs:
   build:
-    name: Build (${{ matrix.os }} / ${{ matrix.arch }})
-    runs-on: ${{ matrix.os }}
+    name: Build (${{ matrix.config.name }})
+    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: windows-latest
-            arch: x64
-            artifact-prefix: windows
-          - os: macos-latest
-            arch: x64
-            artifact-prefix: macos
-          - os: macos-latest
-            arch: arm64
-            artifact-prefix: macos
-          - os: ubuntu-latest
-            arch: x64
-            artifact-prefix: linux
+        config:
+          - name: Windows x64
+            os: windows-latest
+            args: "--win nsis zip"
+            artifact-glob: "release/*.exe,release/*.zip"
+          - name: macOS Intel
+            os: macos-13
+            args: "--mac dmg zip --x64"
+            artifact-glob: "release/*.dmg,release/*-mac*.zip"
+          - name: macOS Apple Silicon
+            os: macos-latest
+            args: "--mac dmg zip --arm64"
+            artifact-glob: "release/*.dmg,release/*-mac*.zip"
+          - name: Linux x64
+            os: ubuntu-latest
+            args: "--linux AppImage deb"
+            artifact-glob: "release/*.AppImage,release/*.deb"
 
     steps:
       - name: Checkout
@@ -57,28 +57,22 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Build renderer
+        run: npm run icon:generate && npm run build
+
       - name: Build desktop package
+        # --publish never: never let electron-builder auto-publish; we attach
+      # artifacts explicitly in the release job below.
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS notarization is optional; only triggered if secrets are set.
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ runner.os == 'macOS' && 'false' || 'false' }}
-        run: npm run electron:build -- --${{ matrix.arch }}
+          GH_TOKEN: ""
+        run: npx electron-builder ${{ matrix.config.args }} --publish never
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LocalPDF-Studio-${{ matrix.artifact-prefix }}-${{ matrix.arch }}
-          path: |
-            release/*-Setup-*.exe
-            release/*-Portable-*.zip
-            release/*.dmg
-            release/*.app
-            release/*.snap
-            release/*-*.AppImage
-            release/*-*.deb
-            release/*.yml
-            release/*.blockmap
-          if-no-files-found: ignore
+          name: LocalPDF-Studio-${{ matrix.config.name }}
+          path: ${{ matrix.config.artifact-glob }}
+          if-no-files-found: warn
           retention-days: 14
 
   release:
@@ -90,42 +84,33 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      - name: Move artifacts to a flat folder
+      - name: Collect release assets
         run: |
           mkdir -p release-assets
           find artifacts -type f \( \
-            -name "*-Setup-*.exe" -o \
-            -name "*-Portable-*.zip" -o \
+            -name "*.exe" -o \
+            -name "*.zip" -o \
             -name "*.dmg" -o \
-            -name "*.app" -o \
-            -name "*-*.AppImage" -o \
-            -name "*-*.deb" -o \
-            -name "*.snap" \
+            -name "*.AppImage" -o \
+            -name "*.deb" \
           \) -exec cp -v {} release-assets/ \;
-          ls -la release-assets/
+          echo "Assets collected:" && ls -la release-assets/
 
       - name: Generate checksums
         working-directory: release-assets
-        run: sha256sum * | tee ../checksums-sha256.txt
+        run: sha256sum * | tee ../checksums-mac-linux.txt
 
-      - name: Upload assets to GitHub Release
+      - name: Attach macOS/Linux assets to the release
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             release-assets/*
-            checksums-sha256.txt
-          # The release + body are created from the `gh` CLI in the release job
-          # below; here we only attach the macOS/Linux binaries that this CI
-          # produces. If the release already exists, assets are appended.
+            checksums-mac-linux.txt
           draft: false
-          generate_release_notes: false
           fail_on_unmatched_files: false
