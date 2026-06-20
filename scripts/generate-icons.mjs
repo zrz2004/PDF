@@ -13,16 +13,16 @@ await fs.mkdir(publicDir, { recursive: true })
 const svg = await fs.readFile(svgPath)
 await fs.writeFile(path.join(publicDir, 'favicon.svg'), svg)
 
-const sizes = [16, 24, 32, 48, 64, 128, 256, 512, 1024]
+const icoSizes = [16, 24, 32, 48, 64, 128, 256]
 const pngs = []
-for (const size of sizes) {
+for (const size of icoSizes) {
   const buffer = await sharp(svg).resize(size, size).png().toBuffer()
   pngs.push(buffer)
-  if (size === 1024) {
-    await fs.writeFile(path.join(buildDir, 'icon.png'), buffer)
-    await fs.writeFile(path.join(publicDir, 'icon.png'), buffer)
-  }
 }
+// macOS .icns requires ≥512px; generate 1024×1024 PNG for icon.png (not included in ICO)
+const iconPng = await sharp(svg).resize(1024, 1024).png().toBuffer()
+await fs.writeFile(path.join(buildDir, 'icon.png'), iconPng)
+await fs.writeFile(path.join(publicDir, 'icon.png'), iconPng)
 const ico = await toIco(pngs)
 await fs.writeFile(path.join(buildDir, 'icon.ico'), ico)
 await fs.writeFile(path.join(publicDir, 'favicon.ico'), ico)
