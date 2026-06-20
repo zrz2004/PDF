@@ -50,6 +50,18 @@ export function ImagePreview({ filePath, fileSize }: Props) {
     )
   }
 
+  if (!window.electronAPI?.readImageAsDataUrl) {
+    return (
+      <div className="grid h-full min-h-[280px] place-items-center bg-[var(--lp-surface-muted)]/60 p-6 text-center text-[var(--lp-text-muted)]">
+        <div>
+          <Image className="mx-auto mb-3 text-[var(--lp-text-muted)]" size={42} />
+          <div className="text-sm font-semibold text-[var(--lp-text)]">图片预览不可用</div>
+          <div className="mt-1 text-xs">需要 Electron 环境支持</div>
+        </div>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="grid h-full min-h-[280px] place-items-center bg-[var(--lp-surface-muted)]/60 p-6 text-center text-[var(--lp-text-muted)]">

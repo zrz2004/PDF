@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type Props = {
   filePath?: string
@@ -18,30 +18,31 @@ export function PageThumbnailStrip({ filePath, pageCount, currentPage, onPageCha
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([])
   const [loading, setLoading] = useState(false)
 
-  const loadThumbnails = useCallback(async () => {
-    if (!filePath || !pageCount || !window.electronAPI?.renderPdfPage) return
+  useEffect(() => {
+    const renderPdfPage = window.electronAPI?.renderPdfPage
+    if (!filePath || !pageCount || !renderPdfPage) return
     const count = Math.min(pageCount, MAX_THUMBNAILS)
+    let cancelled = false
     setLoading(true)
-    try {
-      const results: Thumbnail[] = []
+    setThumbnails([])
+    const results: Thumbnail[] = []
+    ;(async () => {
       for (let page = 1; page <= count; page++) {
+        if (cancelled) break
         try {
-          const result = await window.electronAPI.renderPdfPage(filePath, page)
+          const result = await renderPdfPage(filePath, page)
+          if (cancelled) break
           results.push({ pageNumber: result.pageNumber, dataUrl: result.dataUrl })
+          setThumbnails([...results])
         } catch {
           // skip pages that fail to render
         }
-        setThumbnails([...results])
       }
-    } finally {
-      setLoading(false)
-    }
+    })().finally(() => {
+      if (!cancelled) setLoading(false)
+    })
+    return () => { cancelled = true }
   }, [filePath, pageCount])
-
-  useEffect(() => {
-    setThumbnails([])
-    loadThumbnails()
-  }, [loadThumbnails])
 
   if (!filePath || !pageCount) return null
 

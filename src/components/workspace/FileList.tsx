@@ -29,6 +29,10 @@ export function FileList({ files, onRemove, onClear, onReorder }: Props) {
     }
   }
 
+  function handleDragLeave(index: number) {
+    if (dropIndex === index) setDropIndex(null)
+  }
+
   function handleDragEnd() {
     if (dragNodeRef.current != null && dropIndex != null && dragNodeRef.current !== dropIndex && onReorder) {
       const reordered = [...files]
@@ -71,6 +75,7 @@ export function FileList({ files, onRemove, onClear, onReorder }: Props) {
                     draggable={!!onReorder}
                     onDragStart={() => handleDragStart(index)}
                     onDragOver={(e) => handleDragOver(e, index)}
+                    onDragLeave={() => handleDragLeave(index)}
                     onDragEnd={handleDragEnd}
                     className={`group transition ${isDragging ? 'opacity-40' : ''} ${isDropTarget ? 'border-t-2 border-t-[var(--lp-accent)]' : ''} hover:bg-[var(--lp-surface-muted)]/60`}
                     style={{ cursor: onReorder ? 'grab' : undefined }}

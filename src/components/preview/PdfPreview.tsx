@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { formatBytes } from '@/lib/format'
@@ -22,26 +22,22 @@ export function PdfPreview({ filePath, pageCount, fileSize, currentPage, onPageC
   const [render, setRender] = useState<PageRender | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  const renderPage = useCallback(async (page: number) => {
-    if (!filePath || !window.electronAPI?.renderPdfPage) return
-    let cancelled = false
-    setLoading(true)
-    setError('')
-    try {
-      const result = await window.electronAPI.renderPdfPage(filePath, page)
-      if (!cancelled) setRender(result)
-    } catch (err) {
-      if (!cancelled) setError(err instanceof Error ? err.message : String(err))
-    } finally {
-      if (!cancelled) setLoading(false)
-    }
-    return () => { cancelled = true }
-  }, [filePath])
+  const cancelledRef = useRef(false)
 
   useEffect(() => {
-    renderPage(currentPage)
-  }, [currentPage, renderPage])
+    if (!filePath || !window.electronAPI?.renderPdfPage) return
+    cancelledRef.current = false
+    setLoading(true)
+    setError('')
+    window.electronAPI.renderPdfPage(filePath, currentPage).then((result) => {
+      if (!cancelledRef.current) setRender(result)
+    }).catch((err) => {
+      if (!cancelledRef.current) setError(err instanceof Error ? err.message : String(err))
+    }).finally(() => {
+      if (!cancelledRef.current) setLoading(false)
+    })
+    return () => { cancelledRef.current = true }
+  }, [filePath, currentPage])
 
   if (!filePath) {
     return (
@@ -78,7 +74,7 @@ export function PdfPreview({ filePath, pageCount, fileSize, currentPage, onPageC
           )}
         </div>
       </div>
-      <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto bg-[var(--lp-surface-muted)]/60 p-4">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto bg-[var(--lp-surface-muted)]/60 p-4">
         {loading && !render && <div className="text-sm text-[var(--lp-text-muted)]">渲染第 {currentPage} 页...</div>}
         {error && (
           <div className="text-center">
@@ -93,6 +89,13 @@ export function PdfPreview({ filePath, pageCount, fileSize, currentPage, onPageC
             alt={`PDF 第 ${render.pageNumber} 页`}
             className="max-h-full max-w-full rounded-lg border border-[var(--lp-border)] object-contain shadow-md"
           />
+        )}
+        {loading && render && (
+          <div className="absolute inset-0 z-10 grid place-items-center rounded-lg bg-[var(--lp-surface-muted)]/50">
+            <div className="rounded-lg bg-[var(--lp-surface)]/90 px-4 py-2 text-xs text-[var(--lp-text-muted)] shadow-sm">
+              渲染第 {currentPage} 页...
+            </div>
+          </div>
         )}
       </div>
     </div>
