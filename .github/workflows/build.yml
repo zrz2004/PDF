@@ -117,7 +117,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ github.ref_name }}
-          name: "LocalPDF Studio v${{ github.ref_name }}"
+          name: "LocalPDF Studio ${{ github.ref_name }}"
           body_path: .github/release-notes.md
           files: |
             release-assets/*
