@@ -123,6 +123,9 @@ jobs:
           files: |
             release-assets/*
             checksums-sha256.txt
-          draft: true
+          # The release + body are created from the `gh` CLI in the release job
+          # below; here we only attach the macOS/Linux binaries that this CI
+          # produces. If the release already exists, assets are appended.
+          draft: false
           generate_release_notes: false
-          body_path: .github/release-notes.md
+          fail_on_unmatched_files: false
