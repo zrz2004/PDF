@@ -123,7 +123,7 @@ PATH / common install locations.
 
 ## 🧑‍💻 Development · 开发
 
-**Prerequisites:** Node.js 18+ and npm.
+**Prerequisites:** Node.js 22+ and npm.
 
 ```bash
 git clone https://github.com/zrz2004/PDF.git

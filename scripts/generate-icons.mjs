@@ -13,12 +13,12 @@ await fs.mkdir(publicDir, { recursive: true })
 const svg = await fs.readFile(svgPath)
 await fs.writeFile(path.join(publicDir, 'favicon.svg'), svg)
 
-const sizes = [16, 24, 32, 48, 64, 128, 256]
+const sizes = [16, 24, 32, 48, 64, 128, 256, 512, 1024]
 const pngs = []
 for (const size of sizes) {
   const buffer = await sharp(svg).resize(size, size).png().toBuffer()
   pngs.push(buffer)
-  if (size === 256) {
+  if (size === 1024) {
     await fs.writeFile(path.join(buildDir, 'icon.png'), buffer)
     await fs.writeFile(path.join(publicDir, 'icon.png'), buffer)
   }

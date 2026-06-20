@@ -28,7 +28,7 @@
     "privacy"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",

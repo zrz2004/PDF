@@ -41,7 +41,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -61,10 +61,9 @@ jobs:
         run: npm run icon:generate && npm run build
 
       - name: Build desktop package
-        # --publish never: never let electron-builder auto-publish; we attach
-      # artifacts explicitly in the release job below.
         env:
           GH_TOKEN: ""
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: npx electron-builder ${{ matrix.config.args }} --publish never
 
       - name: Upload artifacts
@@ -84,6 +83,9 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -103,14 +105,17 @@ jobs:
 
       - name: Generate checksums
         working-directory: release-assets
-        run: sha256sum * | tee ../checksums-mac-linux.txt
+        run: sha256sum * | tee ../checksums-sha256.txt
 
-      - name: Attach macOS/Linux assets to the release
+      - name: Create or update release
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          name: "LocalPDF Studio v${{ github.ref_name }}"
+          body_path: .github/release-notes.md
           files: |
             release-assets/*
-            checksums-mac-linux.txt
+            checksums-sha256.txt
           draft: false
           fail_on_unmatched_files: false
