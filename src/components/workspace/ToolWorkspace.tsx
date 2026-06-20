@@ -173,7 +173,7 @@ export function ToolWorkspace({ toolId, onBack }: Props) {
           </div>
           {fileWarning && <div className="rounded-2xl border border-[var(--lp-warning)]/35 bg-[var(--lp-warning-soft)]/50 p-3 text-sm text-[var(--lp-warning)]">{fileWarning}</div>}
           <FileDropZone tool={tool} onFiles={addFiles} onRejected={(names, reason) => setFileWarning(`已忽略：${names.slice(0, 3).join('、')}。${reason}`)} />
-          <FileList files={files} onRemove={(id) => setFiles((current) => current.filter((file) => file.id !== id))} onClear={() => setFiles([])} />
+          <FileList files={files} onRemove={(id) => setFiles((current) => current.filter((file) => file.id !== id))} onClear={() => setFiles([])} onReorder={(reordered) => setFiles(reordered)} />
           <OutputDirectoryPicker value={outputDirectory} onChange={setOutputDirectory} modeLabel={outputModeLabel} customDirectory={customOutputDirectory} />
           <ConversionOptionsPanel tool={tool} values={options} onChange={(key, value) => setOptions((current) => ({ ...current, [key]: value }))} />
           <JobProgressPanel job={latestJob} />

@@ -1,13 +1,13 @@
 # Contributing to LocalPDF Studio
 
-Thanks for your interest in improving LocalPDF Studio! 🎉 This guide covers
+Thanks for your interest in improving LocalPDF Studio! This guide covers
 getting set up and how to submit changes.
 
 ## Getting Started
 
 **Prerequisites:**
 
-- [Node.js](https://nodejs.org/) 18 or newer (comes with npm).
+- [Node.js](https://nodejs.org/) 22 or newer (comes with npm).
 - Git.
 
 **Optional engines** (only needed to work on engine-dependent features; see

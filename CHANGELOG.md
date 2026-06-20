@@ -19,7 +19,7 @@ First public release.
 - **External engine integration:** qpdf (encrypt/decrypt, linearization), LibreOffice (Office→PDF), Tesseract OCR (scanned PDF OCR), Ghostscript (advanced compression) — all user-installed/user-configured, never bundled.
 - **App experience:** command palette (`Ctrl/Cmd+K`), job history, settings page with per-engine path configuration and built-in self-tests.
 - **Cross-platform build pipeline:** GitHub Actions matrix building Windows, macOS, and Linux artifacts on tag push.
-- Standard community files: MIT LICENSE, CHANGELOG, CONTRIBUTING, SECURITY, CODE OF_CONDUCT, issue templates, and `.editorconfig`.
+- Standard community files: MIT LICENSE, CHANGELOG, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, issue templates, and `.editorconfig`.
 
 ### Changed
 - Generalized external-engine resolver defaults to portable, cross-platform paths (`%LOCALAPPDATA%\LocalPDF\tools` on Windows, `~/.localpdf/tools` elsewhere) instead of developer-machine paths.
@@ -27,3 +27,5 @@ First public release.
 
 ### Distribution
 - External GPL/AGPL/native engines remain user-installed by policy. Built-in capabilities work without any external engine.
+
+[1.0.0]: https://github.com/zrz2004/PDF/releases/tag/v1.0.0

@@ -151,6 +151,9 @@ ipcMain.handle('conversion:start', async (_event, request) => {
 })
 ipcMain.handle('engines:detect', () => detectEngines(loadSettings(app)))
 ipcMain.handle('engines:test', async (_event, engineId) => testEngine(engineId, loadSettings(app)))
+ipcMain.handle('preview:readImage', async (_event, filePath) => getConversionModule().previewReadImage(filePath))
+ipcMain.handle('preview:renderPdfPage', async (_event, filePath, pageNumber) => getConversionModule().previewRenderPdfPage(filePath, pageNumber))
+ipcMain.handle('preview:pdfInfo', async (_event, filePath) => getConversionModule().previewGetPdfInfo(filePath))
 ipcMain.handle('app:paths', () => ({ userData: app.getPath('userData'), temp: app.getPath('temp'), exists: fs.existsSync(app.getPath('userData')) }))
 
 app.whenReady().then(() => {

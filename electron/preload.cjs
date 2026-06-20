@@ -15,5 +15,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   testEngine: (engineId) => ipcRenderer.invoke('engines:test', engineId),
   openPath: (path) => ipcRenderer.invoke('shell:openPath', path),
   appPaths: () => ipcRenderer.invoke('app:paths'),
+  readImageAsDataUrl: (filePath) => ipcRenderer.invoke('preview:readImage', filePath),
+  renderPdfPage: (filePath, pageNumber) => ipcRenderer.invoke('preview:renderPdfPage', filePath, pageNumber),
+  getPdfInfo: (filePath) => ipcRenderer.invoke('preview:pdfInfo', filePath),
   platform: process.platform,
 })

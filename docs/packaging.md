@@ -2,7 +2,7 @@
 
 ## Electron build prerequisites
 
-- Node.js 18+ and npm
+- Node.js 22+ and npm
 
 ## Electron EXE build
 

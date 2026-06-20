@@ -853,4 +853,47 @@ async function convert(request) {
   return assertOutputFiles(outputs)
 }
 
-module.exports = { convert, commandExists, IMAGE_EXTS, OFFICE_EXTS }
+async function previewReadImage(filePath) {
+  const sharp = getSharp()
+  const buffer = await fs.readFile(filePath)
+  const image = sharp(buffer)
+  const metadata = await image.metadata()
+  const pngBuffer = await image.png().toBuffer()
+  return {
+    dataUrl: `data:image/png;base64,${pngBuffer.toString('base64')}`,
+    width: metadata.width || 0,
+    height: metadata.height || 0,
+    format: metadata.format || '',
+  }
+}
+
+async function previewRenderPdfPage(filePath, pageNumber) {
+  const parser = new (getPDFParse())({ data: await fs.readFile(filePath) })
+  try {
+    const pageIndex = Math.max(0, Number(pageNumber) - 1)
+    const result = await parser.getScreenshot({ partial: [pageIndex], scale: 1.5, imageDataUrl: false, imageBuffer: true })
+    const page = result.pages[0]
+    if (!page) throw new Error(`PDF 第 ${pageNumber} 页不存在`)
+    return {
+      pageNumber: page.pageNumber,
+      width: page.width,
+      height: page.height,
+      dataUrl: `data:image/png;base64,${Buffer.from(page.data).toString('base64')}`,
+    }
+  } finally {
+    await parser.destroy().catch(() => {})
+  }
+}
+
+async function previewGetPdfInfo(filePath) {
+  const parser = new (getPDFParse())({ data: await fs.readFile(filePath) })
+  try {
+    const pageCount = await parser.getPageCount()
+    const stat = await fs.stat(filePath)
+    return { pageCount, fileSize: stat.size }
+  } finally {
+    await parser.destroy().catch(() => {})
+  }
+}
+
+module.exports = { convert, commandExists, IMAGE_EXTS, OFFICE_EXTS, previewReadImage, previewRenderPdfPage, previewGetPdfInfo }

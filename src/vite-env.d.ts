@@ -47,6 +47,9 @@ interface Window {
     testEngine?: (engineId: string) => Promise<LocalPDFEngineTestResult>
     openPath?: (path: string) => Promise<unknown>
     appPaths?: () => Promise<unknown>
+    readImageAsDataUrl?: (filePath: string) => Promise<{ dataUrl: string; width: number; height: number; format: string }>
+    renderPdfPage?: (filePath: string, pageNumber: number) => Promise<{ pageNumber: number; width: number; height: number; dataUrl: string }>
+    getPdfInfo?: (filePath: string) => Promise<{ pageCount: number; fileSize: number }>
     platform: string
   }
 }
