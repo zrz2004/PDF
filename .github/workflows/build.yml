@@ -20,19 +20,15 @@ jobs:
           - name: Windows x64
             os: windows-latest
             args: "--win nsis zip"
-            artifact-glob: "release/*.exe,release/*.zip"
           - name: macOS Intel
             os: macos-13
             args: "--mac dmg zip --x64"
-            artifact-glob: "release/*.dmg,release/*-mac*.zip"
           - name: macOS Apple Silicon
             os: macos-latest
             args: "--mac dmg zip --arm64"
-            artifact-glob: "release/*.dmg,release/*-mac*.zip"
           - name: Linux x64
             os: ubuntu-latest
             args: "--linux AppImage deb"
-            artifact-glob: "release/*.AppImage,release/*.deb"
 
     steps:
       - name: Checkout
@@ -66,11 +62,19 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: npx electron-builder ${{ matrix.config.args }} --publish never
 
+      - name: List build output
+        run: ls -la release/
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: LocalPDF-Studio-${{ matrix.config.name }}
-          path: ${{ matrix.config.artifact-glob }}
+          path: |
+            release/*.exe
+            release/*.zip
+            release/*.dmg
+            release/*.AppImage
+            release/*.deb
           if-no-files-found: warn
           retention-days: 14
 
